@@ -1,28 +1,20 @@
-name: Playwright Tests with Allure Report
-
+name: Playwright Tests
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # Chạy hàng ngày lúc 2AM UTC (9AM Vietnam)
-    - cron: '0 2 * * *'
-  workflow_dispatch:  # Cho phép chạy manual
-
+    branches: [ main ]
 jobs:
   test:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
     
     - name: Install dependencies
       run: npm ci
@@ -30,87 +22,16 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
     
-    - name: Create .env file
-      run: |
-        echo "TEST_ENV=${{ secrets.TEST_ENV || 'dev' }}" >> .env
-        echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
-        echo "GMAIL_USER=${{ secrets.GMAIL_USER }}" >> .env
-        echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> .env
-        echo "EMAIL_RECIPIENTS_PASSED=${{ secrets.EMAIL_RECIPIENTS_PASSED }}" >> .env
-        echo "EMAIL_RECIPIENTS_FAILED=${{ secrets.EMAIL_RECIPIENTS_FAILED }}" >> .env
-        echo "COMPANY_NAME=${{ secrets.COMPANY_NAME || 'Playwright Tests' }}" >> .env
-        echo "COMPANY_WEBSITE=${{ secrets.COMPANY_WEBSITE || 'https://github.com' }}" >> .env
-        echo "COMPANY_LOGO_URL=${{ secrets.COMPANY_LOGO_URL || 'https://playwright.dev/img/playwright-logo.svg' }}" >> .env
-    
-    - name: Run Playwright tests
+    - name: Run tests
       run: npm run test
-      continue-on-error: true
     
     - name: Generate Allure Report
       if: always()
       run: npm run allure:generate
     
-    - name: Get Allure history
-      if: always()
-      uses: actions/checkout@v3
-      with:
-        ref: gh-pages
-        path: gh-pages
-      continue-on-error: true
-    
-    - name: Copy Allure history
-      if: always()
-      run: |
-        if [ -d "gh-pages/allure-history" ]; then
-          cp -r gh-pages/allure-history allure-report/history
-        fi
-      continue-on-error: true
-    
-    - name: Deploy to GitHub Pages
-      if: always()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: allure-report
-        destination_dir: reports/${{ github.run_number }}
-        keep_files: true
-    
-    - name: Send Email Notification
-      if: always()
-      env:
-        REPORT_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_number }}
-      run: |
-        if [ -n "${{ secrets.GMAIL_USER }}" ] && [ -n "${{ secrets.GMAIL_APP_PASSWORD }}" ]; then
-          npm run test:report || echo "Email notification skipped or failed"
-        else
-          echo "Email credentials not configured. Skipping email notification."
-        fi
-    
-    - name: Upload Allure Report as Artifact
+    - name: Upload report
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: allure-report-${{ github.run_number }}
+        name: allure-report
         path: allure-report/
-        retention-days: 30
-    
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results-${{ github.run_number }}
-        path: test-results/
-        retention-days: 7
-    
-    - name: Comment PR with Report Link
-      if: github.event_name == 'pull_request' && always()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const reportUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/reports/${{ github.run_number }}`;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `## 🎭 Playwright Test Results\n\n📊 [View Allure Report](${reportUrl})\n\n*Report will be available in a few minutes after deployment.*`
-          })

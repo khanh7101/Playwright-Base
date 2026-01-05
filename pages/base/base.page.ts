@@ -16,7 +16,9 @@ export class BasePage {
      * @param path URL path to navigate to
      */
     async goto(path: string = '/') {
-        await this.page.goto(path);
+        const baseUrl = process.env.BASE_URL || '';
+        const fullUrl = path.startsWith('http') ? path : `${baseUrl}${path}`;
+        await this.page.goto(fullUrl);
     }
 
     /**

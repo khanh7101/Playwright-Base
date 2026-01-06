@@ -1,7 +1,7 @@
 export const reporters = [
     ['list', { printSteps: true }],
     ['html', { open: 'never' }],
-    // ['junit', { outputFile: 'junit/results.xml' }],
+    ['junit', { outputFile: 'junit/results.xml' }],
     [
         'allure-playwright',
         {

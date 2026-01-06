@@ -1,5 +1,5 @@
 import { test as base } from '@playwright/test';
-import { HomePage } from '../pages/website/home.page';
+import { HomePage } from '../tests/pageObjects/website/home.page';
 
 // Declare the types of your fixtures.
 type MyFixtures = {

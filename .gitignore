@@ -9,7 +9,6 @@ allure-results/
 allure-report/
 junit/
 
-docs/
 
 # Environment variables
 # .env (commented out - we commit .env for this private repo)

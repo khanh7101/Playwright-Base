@@ -4,6 +4,7 @@ pipeline {
     environment {
         CI = 'true'
         PATH = "/usr/local/bin:/opt/homebrew/bin:$PATH"
+        JAVA_HOME = "/opt/homebrew/opt/openjdk@17"
     }
     
     stages {
@@ -184,7 +185,7 @@ pipeline {
                     </body>
                     </html>
                 """,
-                to: 'team@yourcompany.com',
+                to: 'khanhvuduy7101@gmail.com',
                 from: 'jenkins@yourcompany.com',
                 replyTo: 'jenkins@yourcompany.com',
                 mimeType: 'text/html',
@@ -219,7 +220,7 @@ pipeline {
                     </body>
                     </html>
                 """,
-                to: 'team@yourcompany.com',
+                to: 'khanhvuduy7101@gmail.com',
                 from: 'jenkins@yourcompany.com',
                 mimeType: 'text/html'
             )

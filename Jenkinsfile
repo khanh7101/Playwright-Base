@@ -40,30 +40,20 @@ pipeline {
         
         stage('Publish Reports') {
             steps {
+                // Publish Allure Report (using Allure Plugin)
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    properties: [],
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'allure-results']]
+                ])
+                
                 // Publish JUnit XML Report
                 junit 'junit/results.xml'
                 
-                // Publish Allure HTML Report (no plugin needed)
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'allure-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Allure Report',
-                    reportTitles: 'Allure Test Report'
-                ])
-                
-                // Publish Playwright HTML Report
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright HTML Report',
-                    reportTitles: 'Playwright Test Report'
-                ])
+                // Archive Playwright HTML Report  
+                archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
             }
         }
     }

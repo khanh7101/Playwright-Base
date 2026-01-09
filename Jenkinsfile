@@ -52,7 +52,7 @@ pipeline {
                 // Publish JUnit XML Report
                 junit 'junit/results.xml'
                 
-                // Archive HTML Report
+                // Archive Playwright HTML Report
                 publishHTML([
                     allowMissing: false,
                     alwaysLinkToLastBuild: true,

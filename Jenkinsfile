@@ -1,12 +1,9 @@
 pipeline {
     agent any
     
-    tools {
-        nodejs 'NodeJS 18' // Ensure NodeJS 18 is configured in Jenkins Global Tool Configuration
-    }
-    
     environment {
         CI = 'true'
+        PATH = "/usr/local/bin:/opt/homebrew/bin:$PATH"
     }
     
     stages {

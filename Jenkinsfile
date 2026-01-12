@@ -50,7 +50,7 @@ pipeline {
                 ])
                 
                 // Publish JUnit XML Report
-                junit 'junit/results.xml'
+                junit allowEmptyResults: true, testResults: 'junit/results.xml'
                 
                 // Archive Playwright HTML Report  
                 archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true

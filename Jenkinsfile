@@ -60,224 +60,75 @@ pipeline {
     
     post {
         always {
+            script {
+                // Send unified email notification for all build results
+                emailext (
+                    subject: "📊 Playwright Test Report: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                    body: """
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+                                .header { background-color: #2196F3; color: white; padding: 20px; text-align: center; }
+                                .content { padding: 30px; max-width: 800px; margin: 0 auto; }
+                                table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+                                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                                th { background-color: #f5f5f5; font-weight: bold; }
+                                .test-passed { color: #4CAF50; font-weight: bold; }
+                                .test-failed { color: #f44336; font-weight: bold; }
+                                .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
+                                a { color: #2196F3; text-decoration: none; }
+                                a:hover { text-decoration: underline; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>📊 Playwright Test Report</h1>
+                            </div>
+                            
+                            <div class="content">
+                                <h2>Build Information</h2>
+                                <table>
+                                    <tr><th>Property</th><th>Value</th></tr>
+                                    <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
+                                    <tr><td>Build Number</td><td>#${env.BUILD_NUMBER}</td></tr>
+                                    <tr><td>Build Time</td><td>\${BUILD_TIMESTAMP}</td></tr>
+                                    <tr><td>Duration</td><td>\${BUILD_DURATION}</td></tr>
+                                </table>
+                                
+                                <h2>Test Results</h2>
+                                <table>
+                                    <tr><th>Metric</th><th>Count</th></tr>
+                                    <tr><td>Total Tests</td><td><strong>\${TEST_COUNTS,var="total"}</strong></td></tr>
+                                    <tr><td>Passed</td><td class="test-passed">\${TEST_COUNTS,var="pass"}</td></tr>
+                                    <tr><td>Failed</td><td class="test-failed">\${TEST_COUNTS,var="fail"}</td></tr>
+                                    <tr><td>Skipped</td><td>\${TEST_COUNTS,var="skip"}</td></tr>
+                                </table>
+                                
+                                <h2>📊 View Detailed Reports</h2>
+                                <ul>
+                                    <li><a href="${env.BUILD_URL}allure">Allure Report</a> - Interactive test report with charts and screenshots</li>
+                                    <li><a href="${env.BUILD_URL}console">Console Output</a> - Full build log</li>
+                                </ul>
+                                
+                                <div class="footer">
+                                    <p><strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                    <p>This is an automated notification from Jenkins CI/CD</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                    """,
+                    to: 'khanhvuduy7101@gmail.com',
+                    from: 'jenkins@yourcompany.com',
+                    replyTo: 'jenkins@yourcompany.com',
+                    mimeType: 'text/html'
+                )
+            }
+            
             // Clean workspace
             cleanWs()
-        }
-        
-        success {
-            echo 'Tests passed successfully!'
-            emailext (
-                subject: "✅ Jenkins Build SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .header { background-color: #4CAF50; color: white; padding: 15px; }
-                            .content { padding: 20px; }
-                            table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #4CAF50; color: white; }
-                            .success { color: #4CAF50; font-weight: bold; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>✅ Playwright Tests - Build Successful</h1>
-                        </div>
-                        
-                        <div class="content">
-                            <h2>Build Information</h2>
-                            <table>
-                                <tr><th>Property</th><th>Value</th></tr>
-                                <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
-                                <tr><td>Build Number</td><td>${env.BUILD_NUMBER}</td></tr>
-                                <tr><td>Status</td><td class="success">SUCCESS</td></tr>
-                                <tr><td>Build URL</td><td><a href="${env.BUILD_URL}">${env.BUILD_URL}</a></td></tr>
-                            </table>
-                            
-                            <h2>Test Results</h2>
-                            <table>
-                                <tr><th>Metric</th><th>Count</th></tr>
-                                <tr><td>Total Tests</td><td>\${TEST_COUNTS,var="total"}</td></tr>
-                                <tr><td>Passed</td><td style="color: green;">\${TEST_COUNTS,var="pass"}</td></tr>
-                                <tr><td>Failed</td><td>\${TEST_COUNTS,var="fail"}</td></tr>
-                                <tr><td>Skipped</td><td>\${TEST_COUNTS,var="skip"}</td></tr>
-                            </table>
-                            
-                            <h2>📊 View Reports</h2>
-                            <ul>
-                                <li><a href="${env.BUILD_URL}allure">Allure Report</a></li>
-                                <li><a href="${env.BUILD_URL}testReport">JUnit Test Report</a></li>
-                                <li><a href="${env.BUILD_URL}Playwright_20HTML_20Report">Playwright HTML Report</a></li>
-                                <li><a href="${env.BUILD_URL}console">Console Output</a></li>
-                            </ul>
-                        </div>
-                    </body>
-                    </html>
-                """,
-                to: 'khanhvuduy7101@gmail.com',
-                from: 'jenkins@yourcompany.com',
-                replyTo: 'jenkins@yourcompany.com',
-                mimeType: 'text/html'
-            )
-        }
-        
-        failure {
-            echo 'Tests failed. Check the reports for details.'
-            emailext (
-                subject: "❌ Jenkins Build FAILED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .header { background-color: #f44336; color: white; padding: 15px; }
-                            .content { padding: 20px; }
-                            table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #f44336; color: white; }
-                            .failed { color: #f44336; font-weight: bold; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>❌ Playwright Tests - Build Failed</h1>
-                        </div>
-                        
-                        <div class="content">
-                            <h2>Build Information</h2>
-                            <table>
-                                <tr><th>Property</th><th>Value</th></tr>
-                                <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
-                                <tr><td>Build Number</td><td>${env.BUILD_NUMBER}</td></tr>
-                                <tr><td>Status</td><td class="failed">FAILED</td></tr>
-                                <tr><td>Build URL</td><td><a href="${env.BUILD_URL}">${env.BUILD_URL}</a></td></tr>
-                            </table>
-                            
-                            <h2>Test Results</h2>
-                            <table>
-                                <tr><th>Metric</th><th>Count</th></tr>
-                                <tr><td>Total Tests</td><td>\${TEST_COUNTS,var="total"}</td></tr>
-                                <tr><td>Passed</td><td style="color: green;">\${TEST_COUNTS,var="pass"}</td></tr>
-                                <tr><td>Failed</td><td style="color: red; font-weight: bold;">\${TEST_COUNTS,var="fail"}</td></tr>
-                                <tr><td>Skipped</td><td>\${TEST_COUNTS,var="skip"}</td></tr>
-                            </table>
-                            
-                            <h2>🔍 Debug Information</h2>
-                            <ul>
-                                <li><a href="${env.BUILD_URL}allure">View Allure Report</a></li>
-                                <li><a href="${env.BUILD_URL}testReport">View Failed Tests</a></li>
-                                <li><a href="${env.BUILD_URL}console">View Console Output</a></li>
-                            </ul>
-                            
-                            <p><strong>Action Required:</strong> Please check the failed tests and fix the issues.</p>
-                        </div>
-                    </body>
-                    </html>
-                """,
-                to: 'khanhvuduy7101@gmail.com',
-                from: 'jenkins@yourcompany.com',
-                replyTo: 'jenkins@yourcompany.com',
-                mimeType: 'text/html',
-                attachLog: true,
-                compressLog: true
-            )
-        }
-        
-        fixed {
-            emailext (
-                subject: "🔧 Jenkins Build FIXED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .header { background-color: #2196F3; color: white; padding: 15px; }
-                            .content { padding: 20px; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>🔧 Build Fixed!</h1>
-                        </div>
-                        <div class="content">
-                            <p>Great news! The build is now passing after previous failures.</p>
-                            <p><strong>Project:</strong> ${env.JOB_NAME}</p>
-                            <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                            <p><a href="${env.BUILD_URL}">View Build Details</a></p>
-                        </div>
-                    </body>
-                    </html>
-                """,
-                to: 'khanhvuduy7101@gmail.com',
-                from: 'jenkins@yourcompany.com',
-                mimeType: 'text/html'
-            )
-        }
-        
-        unstable {
-            echo 'Build is unstable. Sending notification...'
-            emailext (
-                subject: "⚠️ Jenkins Build UNSTABLE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .header { background-color: #FF9800; color: white; padding: 15px; }
-                            .content { padding: 20px; }
-                            table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #FF9800; color: white; }
-                            .unstable { color: #FF9800; font-weight: bold; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>⚠️ Playwright Tests - Build Unstable</h1>
-                        </div>
-                        
-                        <div class="content">
-                            <h2>Build Information</h2>
-                            <table>
-                                <tr><th>Property</th><th>Value</th></tr>
-                                <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
-                                <tr><td>Build Number</td><td>${env.BUILD_NUMBER}</td></tr>
-                                <tr><td>Status</td><td class="unstable">UNSTABLE</td></tr>
-                                <tr><td>Build URL</td><td><a href="${env.BUILD_URL}">${env.BUILD_URL}</a></td></tr>
-                            </table>
-                            
-                            <h2>Test Results</h2>
-                            <table>
-                                <tr><th>Metric</th><th>Count</th></tr>
-                                <tr><td>Total Tests</td><td>\${TEST_COUNTS,var="total"}</td></tr>
-                                <tr><td>Passed</td><td style="color: green;">\${TEST_COUNTS,var="pass"}</td></tr>
-                                <tr><td>Failed</td><td>\${TEST_COUNTS,var="fail"}</td></tr>
-                                <tr><td>Skipped</td><td>\${TEST_COUNTS,var="skip"}</td></tr>
-                            </table>
-                            
-                            <h2>📊 View Reports</h2>
-                            <ul>
-                                <li><a href="${env.BUILD_URL}allure">Allure Report</a></li>
-                                <li><a href="${env.BUILD_URL}testReport">JUnit Test Report</a></li>
-                                <li><a href="${env.BUILD_URL}console">Console Output</a></li>
-                            </ul>
-                            
-                            <p><strong>Note:</strong> Build is unstable. Tests may have passed but there are warnings or other issues.</p>
-                        </div>
-                    </body>
-                    </html>
-                """,
-                to: 'khanhvuduy7101@gmail.com',
-                from: 'jenkins@yourcompany.com',
-                replyTo: 'jenkins@yourcompany.com',
-                mimeType: 'text/html'
-            )
         }
     }
 }

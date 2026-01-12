@@ -218,5 +218,66 @@ pipeline {
                 mimeType: 'text/html'
             )
         }
+        
+        unstable {
+            echo 'Build is unstable. Sending notification...'
+            emailext (
+                subject: "⚠️ Jenkins Build UNSTABLE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                body: """
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; }
+                            .header { background-color: #FF9800; color: white; padding: 15px; }
+                            .content { padding: 20px; }
+                            table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #FF9800; color: white; }
+                            .unstable { color: #FF9800; font-weight: bold; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>⚠️ Playwright Tests - Build Unstable</h1>
+                        </div>
+                        
+                        <div class="content">
+                            <h2>Build Information</h2>
+                            <table>
+                                <tr><th>Property</th><th>Value</th></tr>
+                                <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
+                                <tr><td>Build Number</td><td>${env.BUILD_NUMBER}</td></tr>
+                                <tr><td>Status</td><td class="unstable">UNSTABLE</td></tr>
+                                <tr><td>Build URL</td><td><a href="${env.BUILD_URL}">${env.BUILD_URL}</a></td></tr>
+                            </table>
+                            
+                            <h2>Test Results</h2>
+                            <table>
+                                <tr><th>Metric</th><th>Count</th></tr>
+                                <tr><td>Total Tests</td><td>\${TEST_COUNTS,var="total"}</td></tr>
+                                <tr><td>Passed</td><td style="color: green;">\${TEST_COUNTS,var="pass"}</td></tr>
+                                <tr><td>Failed</td><td>\${TEST_COUNTS,var="fail"}</td></tr>
+                                <tr><td>Skipped</td><td>\${TEST_COUNTS,var="skip"}</td></tr>
+                            </table>
+                            
+                            <h2>📊 View Reports</h2>
+                            <ul>
+                                <li><a href="${env.BUILD_URL}allure">Allure Report</a></li>
+                                <li><a href="${env.BUILD_URL}testReport">JUnit Test Report</a></li>
+                                <li><a href="${env.BUILD_URL}console">Console Output</a></li>
+                            </ul>
+                            
+                            <p><strong>Note:</strong> Build is unstable. Tests may have passed but there are warnings or other issues.</p>
+                        </div>
+                    </body>
+                    </html>
+                """,
+                to: 'khanhvuduy7101@gmail.com',
+                from: 'jenkins@yourcompany.com',
+                replyTo: 'jenkins@yourcompany.com',
+                mimeType: 'text/html'
+            )
+        }
     }
 }

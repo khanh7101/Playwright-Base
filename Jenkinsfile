@@ -10,6 +10,7 @@ pipeline {
         CI = 'true'
         PATH = "/usr/local/bin:/opt/homebrew/bin:$PATH"
         JAVA_HOME = "/opt/homebrew/opt/openjdk@17"
+        TZ = 'Asia/Ho_Chi_Minh'
     }
     
     stages {

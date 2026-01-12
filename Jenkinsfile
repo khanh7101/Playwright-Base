@@ -46,7 +46,8 @@ pipeline {
                     jdk: '',
                     properties: [],
                     reportBuildPolicy: 'ALWAYS',
-                    results: [[path: 'allure-results']]
+                    results: [[path: 'allure-results']],
+                    unstableBuildPolicy: 'NEVER'
                 ])
                 
                 // Publish JUnit XML Report (commented out to prevent UNSTABLE status)

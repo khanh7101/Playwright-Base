@@ -49,8 +49,8 @@ pipeline {
                     results: [[path: 'allure-results']]
                 ])
                 
-                // Publish JUnit XML Report
-                junit allowEmptyResults: true, testResults: 'junit/results.xml'
+                // Publish JUnit XML Report (commented out - using Allure instead)
+                // junit allowEmptyResults: true, testResults: 'junit/results.xml'
                 
                 // Archive Playwright HTML Report  
                 archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true

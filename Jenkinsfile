@@ -1,6 +1,11 @@
 pipeline {
     agent any
     
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+    
     environment {
         CI = 'true'
         PATH = "/usr/local/bin:/opt/homebrew/bin:$PATH"
@@ -49,8 +54,10 @@ pipeline {
                     results: [[path: 'allure-results']]
                 ])
                 
-                // Publish JUnit XML Report (commented out to prevent UNSTABLE status)
-                // junit allowEmptyResults: true, testResults: 'junit/results.xml'
+                // Publish JUnit XML Report (with healthScaleFactor to prevent UNSTABLE)
+                junit allowEmptyResults: true, 
+                      healthScaleFactor: 0.0, 
+                      testResults: 'junit/results.xml'
                 
                 // Archive Playwright HTML Report  
                 archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true

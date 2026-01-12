@@ -49,7 +49,7 @@ pipeline {
                     results: [[path: 'allure-results']]
                 ])
                 
-                // Publish JUnit XML Report (commented out - using Allure instead)
+                // Publish JUnit XML Report (commented out to prevent UNSTABLE status)
                 // junit allowEmptyResults: true, testResults: 'junit/results.xml'
                 
                 // Archive Playwright HTML Report  

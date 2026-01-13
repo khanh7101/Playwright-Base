@@ -43,14 +43,18 @@ pipeline {
                 timeout(time: 1, unit: 'HOURS')
             }
             steps {
+                // Clean all Allure history before running tests
+                sh '''
+                    rm -rf allure-results
+                    rm -rf allure-report
+                    mkdir -p allure-results
+                '''
                 sh 'npm run test'
             }
         }
         
         stage('Generate Allure Report') {
             steps {
-                // Clean old results and generate fresh report
-                sh 'rm -rf allure-report allure-results/.history'
                 sh 'npm run allure:generate'
             }
         }

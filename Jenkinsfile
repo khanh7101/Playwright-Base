@@ -49,6 +49,8 @@ pipeline {
         
         stage('Generate Allure Report') {
             steps {
+                // Clean old results and generate fresh report
+                sh 'rm -rf allure-report allure-results/.history'
                 sh 'npm run allure:generate'
             }
         }

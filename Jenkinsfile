@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     triggers {
-        // Run tests automatically at 4 AM and 8 PM Vietnam time every day
-        cron('0 4,20 * * *')
+        // Run tests automatically every 15 minutes
+        cron('H/15 * * * *')
     }
     
     options {

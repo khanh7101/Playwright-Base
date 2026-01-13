@@ -3,11 +3,11 @@ node_modules/
 package-lock.json
 
 # Test results
-test-results/
-playwright-report/
 allure-results/
 allure-report/
+playwright-report/
 junit/
+test-results/
 
 
 # Environment variables

@@ -110,8 +110,8 @@ pipeline {
                                     <tr><th>Property</th><th>Value</th></tr>
                                     <tr><td>Project</td><td>${env.JOB_NAME}</td></tr>
                                     <tr><td>Build Number</td><td>#${env.BUILD_NUMBER}</td></tr>
-                                    <tr><td>Build Time</td><td>\${BUILD_TIMESTAMP}</td></tr>
-                                    <tr><td>Duration</td><td>\${BUILD_DURATION}</td></tr>
+                                    <tr><td>Build Time</td><td>${new Date(currentBuild.startTimeInMillis).format('yyyy-MM-dd HH:mm:ss', TimeZone.getTimeZone('Asia/Ho_Chi_Minh'))}</td></tr>
+                                    <tr><td>Duration</td><td>${currentBuild.durationString.replace(' and counting', '')}</td></tr>
                                 </table>
                                 
                                 <h2>Test Results</h2>

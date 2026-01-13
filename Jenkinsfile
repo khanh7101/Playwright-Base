@@ -1,9 +1,15 @@
 pipeline {
     agent any
     
+    triggers {
+        // Run tests automatically at 4 AM and 8 PM Vietnam time every day
+        cron('0 4,20 * * *')
+    }
+    
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 2, unit: 'HOURS')
     }
     
     environment {
@@ -33,6 +39,9 @@ pipeline {
         }
         
         stage('Run Tests') {
+            options {
+                timeout(time: 1, unit: 'HOURS')
+            }
             steps {
                 sh 'npm run test'
             }
